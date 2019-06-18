@@ -137,6 +137,12 @@ if !exists('g:pdv_cfg_annotation_Author') | let g:pdv_cfg_annotation_Author = 1 
 if !exists('g:pdv_cfg_annotation_Copyright') | let g:pdv_cfg_annotation_Copyright = 1 | endif
 if !exists('g:pdv_cfg_annotation_License') | let g:pdv_cfg_annotation_License = 1 | endif
 
+" Whether to put an extra newline after the params
+if !exists('g:pdv_cfg_newline_params') | let g:pdv_cfg_newline_params = 0 | endif
+
+" Default param description
+if !exists('g:pdv_cfg_ParamDescription') | let g:pdv_cfg_ParamDescription = '' | endif
+
 "
 " Regular expressions
 "
@@ -376,7 +382,10 @@ func! PhpDocFunc(end_line)
     exe l:txtBOL . g:pdv_cfg_Comment1 . funcname . g:pdv_cfg_EOL
     exe l:txtBOL . g:pdv_cfg_CommentBlank . g:pdv_cfg_EOL
 
+    let l:_haveParams = 0
+
     while (l:parameters != ",") && (l:parameters != "")
+       let _haveParams = 1
         " Save 1st parameter
         let _p = substitute (l:parameters, '\([^,]*\) *, *\(.*\)', '\1', "")
         " Remove this one from list
@@ -397,6 +406,10 @@ func! PhpDocFunc(end_line)
         endif
         exe l:txtBOL . g:pdv_cfg_Commentn . "@param" . l:paramtype . " $" . l:paramname . "" . g:pdv_cfg_EOL
     endwhile
+
+    if l:_haveParams == 1 && g:pdv_cfg_newline_params == 1
+        exe l:txtBOL . g:pdv_cfg_CommentBlank
+    endif
 
     if l:static != ""
         exe l:txtBOL . g:pdv_cfg_Commentn . "@static" . g:pdv_cfg_EOL
