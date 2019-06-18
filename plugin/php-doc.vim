@@ -139,6 +139,8 @@ if !exists('g:pdv_cfg_annotation_License') | let g:pdv_cfg_annotation_License = 
 
 " Whether to put an extra newline after the params
 if !exists('g:pdv_cfg_newline_params') | let g:pdv_cfg_newline_params = 0 | endif
+" Whether to override the function name with something else
+if !exists('g:pdv_cfg_override_funcname') | let g:pdv_cfg_override_funcname = '' | endif
 
 " Default param description
 if !exists('g:pdv_cfg_ParamDescription') | let g:pdv_cfg_ParamDescription = '' | endif
@@ -378,6 +380,11 @@ func! PhpDocFunc(end_line)
     " exec l:txtBOL . "// " . l:scope ." ".  funcname . "(" . l:params . ") {{" . "{ " . g:pdv_cfg_EOL
 
     exe l:txtBOL . g:pdv_cfg_CommentHead . g:pdv_cfg_EOL
+
+    if g:pdv_cfg_override_funcname != ''
+        let l:funcname = g:pdv_cfg_override_funcname
+    endif
+
     " added folding
     exe l:txtBOL . g:pdv_cfg_Comment1 . funcname . g:pdv_cfg_EOL
     exe l:txtBOL . g:pdv_cfg_CommentBlank . g:pdv_cfg_EOL
