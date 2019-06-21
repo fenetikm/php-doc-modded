@@ -139,6 +139,10 @@ if !exists('g:pdv_cfg_annotation_License') | let g:pdv_cfg_annotation_License = 
 
 " Whether to put an extra newline after the params
 if !exists('g:pdv_cfg_newline_params') | let g:pdv_cfg_newline_params = 0 | endif
+
+" Whether to output UltiSnips tabstops
+if !exists('g:pdv_cfg_UltiSnips') | let g:pdv_cfg_UltiSnips = 0 | endif
+
 " Whether to override the function name with something else
 if !exists('g:pdv_cfg_override_funcname') | let g:pdv_cfg_override_funcname = '' | endif
 
@@ -385,6 +389,11 @@ func! PhpDocFunc(end_line)
         let l:funcname = g:pdv_cfg_override_funcname
     endif
 
+    if g:pdv_cfg_UltiSnips == 1
+        let l:pdv_cfg_UltiSnips_i = 2
+        let l:funcname = '${1:' . l:funcname . '}'
+    endif
+
     " added folding
     exe l:txtBOL . g:pdv_cfg_Comment1 . funcname . g:pdv_cfg_EOL
     exe l:txtBOL . g:pdv_cfg_CommentBlank . g:pdv_cfg_EOL
@@ -411,13 +420,23 @@ func! PhpDocFunc(end_line)
         if l:paramtype != ""
             let l:paramtype = " " . l:paramtype
         endif
-        " exe l:txtBOL . g:pdv_cfg_Commentn . "@param" . l:paramtype . " $" . l:paramname . "" . g:pdv_cfg_EOL
         exe l:txtBOL . g:pdv_cfg_Commentn . "@param" . l:paramtype . " $" . l:paramname . ""
+
+        let l:param_description = ""
         if g:pdv_cfg_ParamDescription != ""
-            exe "norm! A " . g:pdv_cfg_ParamDescription . "" . g:pdv_cfg_EOL
-        else
-            exe "norm! A" . g:pdv_cfg_EOL
+            let l:param_description = g:pdv_cfg_ParamDescription
         endif
+
+        if g:pdv_cfg_UltiSnips == 1
+            if l:param_description == ""
+                let l:param_description = "$" . l:pdv_cfg_UltiSnips_i
+            else
+                let l:param_description = "${" . l:pdv_cfg_UltiSnips_i . ":" . l:param_description . "}"
+            endif
+            let l:pdv_cfg_UltiSnips_i = l:pdv_cfg_UltiSnips_i + 1
+        endif
+
+        exe "norm! A " . l:param_description . "" . g:pdv_cfg_EOL
 
     endwhile
 
